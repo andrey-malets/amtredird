@@ -135,3 +135,11 @@ void free_config(struct config *config) {
     free(config->char_storage);
   free(config);
 }
+
+struct client *find_client(struct config *config, const char *host) {
+  struct client client = {0};
+  client.host = host;
+
+  return bsearch(&client, config->clients, config->num_clients,
+                 sizeof(struct client), compare_hostnames);
+}

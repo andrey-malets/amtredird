@@ -1,5 +1,7 @@
 #pragma once
 
+#include "amt-redir-libs/include/IMRSDK.h"
+
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -8,6 +10,8 @@ struct client {
   const char *user;
   const char *passwd;
   const char *filename;
+
+  ClientID id;
 };
 
 struct config {
@@ -25,3 +29,5 @@ struct config {
 
 struct config *parse_config(const char *filename);
 void free_config(struct config *config);
+
+struct client *find_client(struct config *config, const char *host);
