@@ -85,7 +85,7 @@ void teardown_amt(const struct config *config) {
   for (size_t i = config->num_clients; i-- != 0;)
     IMR_CHECK(;, config->clients[i].host,
               IMR_RemoveClient, config->clients[i].id);
-  // IMR_CHECK(;, NULL, IMR_Close(), ;);
+  IMR_CHECK(;, NULL, IMR_Close);
 }
 
 int start_client(const struct config *config, const struct client *client) {

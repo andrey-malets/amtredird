@@ -1,5 +1,6 @@
 CC=clang
-CFLAGS=-pedantic -Werror -Wall -std=c11 -g
+CFLAGS=-pedantic -Werror -Wall -std=c11 -g \
+	-Wno-gnu-zero-variadic-macro-arguments
 
 LIBS=crypto pthread stdc++ ssl uuid
 AMTLIB=amt-redir-libs/lib/libimrsdkUbuntu.a
