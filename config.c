@@ -7,6 +7,7 @@
 
 #define DEFAULT_SECTION  "amtredird"
 #define AMT_INI_FILENAME "amt_ini_filename"
+#define SOCKET           "socket"
 #define DEFAULT_USER     "default_user"
 #define DEFAULT_PASSWD   "default_passwd"
 
@@ -67,6 +68,7 @@ static int config_handler(void *user, const char *section,
 
   if (is_default_section(section)) {
     HANDLE_PARAM(AMT_INI_FILENAME, amt_ini_filename);
+    HANDLE_PARAM(SOCKET, socket);
     HANDLE_PARAM(DEFAULT_USER, default_user);
     HANDLE_PARAM(DEFAULT_PASSWD, default_passwd);
   } else {
@@ -129,6 +131,52 @@ free_rv:
   free(state.config);
   return NULL;
 }
+
+// TODO: add more verbose reporting here
+int validate_config(const struct config *config) {
+  assert(config);
+
+  if (!config->amt_ini_filename || !config->socket)
+    return 0;
+
+  if (config->num_clients == 0)
+    return 0;
+
+  for (size_t i = 0; i != config->num_clients; ++i) {
+    const struct client *client = &config->clients[i];
+    if (!client->host || !client->filename)
+      return 0;
+
+    if (!client->user && !config->default_user)
+      return 0;
+
+    if (!client->passwd && !config->default_passwd)
+      return 0;
+  }
+
+  return 1;
+}
+
+#define GET_FIELD(config, client, field, def, rv) \
+  do { \
+    assert(config); \
+    assert(client); \
+    const char *rv = client->field ? client->field : config->def; \
+    assert(rv); \
+    return rv; \
+  } while (0)
+
+const char *get_username(const struct config *config,
+                         const struct client *client) {
+  GET_FIELD(config, client, user, default_user, rv);
+}
+
+const char *get_passwd(const struct config *config,
+                       const struct client *client) {
+  GET_FIELD(config, client, passwd, default_passwd, rv);
+}
+
+#undef GET_FIELD
 
 void free_config(struct config *config) {
   if (config)
