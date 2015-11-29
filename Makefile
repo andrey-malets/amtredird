@@ -5,8 +5,11 @@ CFLAGS=-pedantic -Werror -Wall -std=c11 -g \
 LIBS=crypto pthread stdc++ ssl uuid
 AMTLIB=amt-redir-libs/lib/libimrsdkUbuntu.a
 
-amtredird: amt.o config.o main.o ini.o
+amtredird: amt.o cmd.o cmp.o config.o main.o ini.o server.o
 	$(CC) $(CFLAGS) $^ -o $@ $(foreach lib,$(LIBS),-l$(lib)) $(AMTLIB)
+
+cmp.o: cmp/cmp.c
+	$(CC) $(CFLAGS) -c -o $@ $^
 
 ini.o: inih/ini.c
 	$(CC) $(CFLAGS) -c -o $@ $^

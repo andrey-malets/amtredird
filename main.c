@@ -1,5 +1,6 @@
 #include "amt.h"
 #include "config.h"
+#include "server.h"
 
 #include <stdio.h>
 
@@ -9,21 +10,7 @@ int main(int ac, char *av[]) {
   struct config *config = parse_config("amtredird.ini");
   if (config && validate_config(config)) {
     if (init_amt(config)) {
-      for (size_t i = 0; i != config->num_clients; ++i) {
-        const struct client *client =
-            find_client(config, config->clients[i].host);
-        if (!start_client(config, client))
-          rv = 1;
-      }
-
-      if (rv == 0)
-        fgetc(stdin);
-
-      for (size_t i = 0; i != config->num_clients; ++i) {
-        if (!stop_client(&config->clients[i]))
-          rv = 1;
-      }
-
+      rv = (run_server(config) == 0);
       teardown_amt(config);
     }
   } else {

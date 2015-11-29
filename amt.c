@@ -1,5 +1,6 @@
 #include "amt.h"
 #include "amt-redir-libs/include/IMRSDK.h"
+#include "macro.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -8,21 +9,6 @@
 #define EMPTY_DEV "/dev/zero"
 
 #define ERROR_MAX_CHARS 200
-
-#define GOTO_WITH(label, retval, value) \
-  do { \
-    (retval) = (value); \
-    goto label; \
-  } while (0)
-
-#define IMR_CHECK(act, host, cmd, ...) \
-  do { \
-    IMRResult res = cmd(__VA_ARGS__); \
-    if (res != IMR_RES_OK) { \
-      display_error(host, #cmd, res); \
-      act; \
-    } \
-  } while (0)
 
 void display_error(const char *host, const char *cmd, IMRResult res) {
   assert(cmd);
@@ -76,7 +62,7 @@ remove_clients:
     IMR_CHECK(;, config->clients[j].host,
               IMR_RemoveClient, config->clients[j].id);
 close:
-  IMR_Close();
+  IMR_CHECK(;, NULL, IMR_Close);
   return 0;
 }
 
