@@ -4,3 +4,6 @@
 [submodule "amt-redir-libs"]
 	path = amt-redir-libs
 	url = /root/amt-redir-libs
+[submodule "cmp"]
+	path = cmp
+	url = git@github.com:camgunz/cmp.git
