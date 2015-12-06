@@ -3,6 +3,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/select.h>
+#include <sys/stat.h>
 #include <sys/un.h>
 #include <unistd.h>
 
@@ -47,6 +48,10 @@ int run_server(const struct config *config, int sfd) {
   CHECK(SYSCALL(bind(server_sock, (struct sockaddr *) &server_addr,
                      sizeof(server_addr))),
         PERROR1("bind() failed with", config->socket),
+        GOTO_WITH(close, rv, 0));
+
+  CHECK(SYSCALL(chmod(config->socket, 0666)),
+        PERROR1("chmod() failed with", config->socket),
         GOTO_WITH(close, rv, 0));
 
   CHECK(SYSCALL(listen(server_sock, 1)),
