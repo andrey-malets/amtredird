@@ -1,3 +1,4 @@
 amtredird
-*.swp
 *.o
+*.pyc
+*.swp
