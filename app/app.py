@@ -48,4 +48,4 @@ def act(cmdname):
             result.append(cmd(name))
         return str(result)
     else:
-        abort(403)
+        abort(404)
