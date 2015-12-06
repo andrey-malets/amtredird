@@ -14,6 +14,7 @@ application.debug = True
 
 
 class authorized(object):
+
     def __init__(self, acl):
         self.hosts = dict((socket.gethostbyname(host), True) for host in acl)
 
@@ -31,9 +32,7 @@ class authorized(object):
 @authorized(config.ACL)
 def list():
     try:
-        code, args = client.list(None)
-        assert code == 0
-        return str(args)
+        return "{}\n".format(client.list(None))
     except Exception as e:
         return str(e)
 
@@ -43,9 +42,7 @@ def list():
 def act(cmdname):
     cmd = {'start': client.start, 'stop': client.stop}.get(cmdname)
     if cmd is not None:
-        result = []
-        for name in [value for _, value in request.form.iteritems()]:
-            result.append(cmd(name))
-        return str(result)
+        return "{}\n".format(
+            [cmd(value) for _, value in request.form.iteritems()])
     else:
         abort(404)
