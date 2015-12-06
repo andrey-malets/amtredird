@@ -1,10 +1,10 @@
-#include "amt.h"
-#include "amt-redir-libs/include/IMRSDK.h"
-#include "macro.h"
-
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "amt.h"
+#include "amt-redir-libs/include/IMRSDK.h"
+#include "macro.h"
 
 #define EMPTY_DEV "/dev/zero"
 

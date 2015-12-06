@@ -40,4 +40,4 @@ const char *get_passwd(const struct config *config,
 
 void free_config(struct config *config);
 
-struct client *find_client(struct config *config, const char *host);
+struct client *find_client(const struct config *config, const char *host);

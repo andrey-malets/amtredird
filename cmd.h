@@ -10,9 +10,9 @@
 
 enum {
   CMD_LIST,
-  CMD_ADD,
-  CMD_DELETE,
-  CMD_LAST = CMD_DELETE
+  CMD_START,
+  CMD_STOP,
+  CMD_LAST = CMD_STOP
 } cmd_type;
 
 struct command {
@@ -22,12 +22,17 @@ struct command {
 
 enum {
   RES_OK,
-  RES_FAILED
+  RES_NO_SUCH_CLIENT,
+  RES_FAILED,
+  RES_NOT_UNDERSTOOD
 } result_code;
 
 struct result {
   uint8_t code;
 };
 
-int read_cmd(void *data, cmp_reader reader, struct command *cmd);
-int write_result(void *data, cmp_writer writer, const struct result *result);
+int read_cmd(int socket, struct command *cmd);
+int write_result(int socket, const struct result *result);
+
+struct config;
+struct result execute(const struct config *config, const struct command *cmd);

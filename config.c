@@ -1,9 +1,9 @@
-#include "config.h"
-#include "inih/ini.h"
-
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "config.h"
+#include "inih/ini.h"
 
 #define DEFAULT_SECTION  "amtredird"
 #define AMT_INI_FILENAME "amt_ini_filename"
@@ -184,7 +184,7 @@ void free_config(struct config *config) {
   free(config);
 }
 
-struct client *find_client(struct config *config, const char *host) {
+struct client *find_client(const struct config *config, const char *host) {
   struct client client = {0};
   client.host = host;
 
