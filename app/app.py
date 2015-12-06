@@ -1,4 +1,5 @@
 import config
+import json
 import os
 import socket
 import sys
@@ -28,13 +29,17 @@ class authorized(object):
         return wrapper
 
 
+def reply(result):
+    return "{}\n".format(json.dumps(result, indent=2))
+
+
 @application.route('{}/list'.format(config.WEB_PATH))
 @authorized(config.ACL)
 def list():
     try:
-        return "{}\n".format(client.list(None))
+        return reply(client.list(None))
     except Exception as e:
-        return str(e)
+        return reply({'error': str(e)})
 
 
 @application.route('{}/<cmdname>'.format(config.WEB_PATH), methods=["POST"])
@@ -42,7 +47,6 @@ def list():
 def act(cmdname):
     cmd = {'start': client.start, 'stop': client.stop}.get(cmdname)
     if cmd is not None:
-        return "{}\n".format(
-            [cmd(value) for _, value in request.form.iteritems()])
+        return reply([cmd(value) for _, value in request.form.iteritems()])
     else:
         abort(404)
