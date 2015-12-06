@@ -4,7 +4,9 @@
 #include "macro.h"
 
 #include <assert.h>
+#include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 
@@ -42,22 +44,28 @@ int read_cmd(int socket, struct command *cmd) {
   cmp_init(&ctx, &socket, read_from_socket, NULL);
 
   uint32_t size;
-  if (!cmp_read_array(&ctx, &size) || size != 2)
+  if (!cmp_read_array(&ctx, &size) || size < 2)
     return 0;
 
   uint8_t version;
   if (!cmp_read_uchar(&ctx, &version) || version != PROTO_VERSION)
     return 0;
 
-  if (!cmp_read_array(&ctx, &size) || size != 2)
-    return 0;
-
   if (!cmp_read_uchar(&ctx, &cmd->type) || cmd->type > CMD_LAST)
     return 0;
 
-  uint32_t argsize = sizeof(cmd->arg);
-  if (!cmp_read_str(&ctx, cmd->arg, &argsize))
-    return 0;
+  switch (cmd->type) {
+  case CMD_START:
+  case CMD_STOP: {
+    uint32_t argsize = sizeof(cmd->arg);
+    if (size != 3 || !cmp_read_str(&ctx, cmd->arg, &argsize))
+      return 0;
+    break;
+  }
+  default:
+    if (size != 2)
+      return 0;
+  }
 
   return 1;
 }
@@ -66,17 +74,31 @@ int write_result(int socket, const struct result *result) {
   cmp_ctx_t ctx;
   cmp_init(&ctx, &socket, NULL, write_to_socket);
 
-  return cmp_write_array(&ctx, 2) &&
-      cmp_write_u8(&ctx, PROTO_VERSION) && cmp_write_u8(&ctx, result->code);
+  if (!cmp_write_array(&ctx, 2 + result->num_clients) ||
+      !cmp_write_u8(&ctx, PROTO_VERSION) || !cmp_write_u8(&ctx, result->code))
+    return 0;
+
+  for (uint32_t i = 0; i != result->num_clients; ++i) {
+    const char *host = result->clients[i].host;
+    if (!cmp_write_str(&ctx, host, strlen(host)))
+      return 0;
+  }
+
+  return 1;
 }
 
 struct result execute(const struct config *config, const struct command *cmd) {
-  struct result res = { .code = RES_NOT_UNDERSTOOD };
+  struct result res;
+  memset(&res, 0, sizeof(res));
+  res.code = RES_NOT_UNDERSTOOD;
   const struct client *client = NULL;
   int rv;
   switch (cmd->type) {
   case CMD_LIST:
-    // TODO: handle client list
+    assert(config->num_clients <= UINT32_MAX);
+    res.code = RES_OK;
+    res.num_clients = config->num_clients;
+    res.clients = config->clients;
     break;
   case CMD_START:
   case CMD_STOP:

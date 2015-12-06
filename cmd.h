@@ -29,6 +29,8 @@ enum {
 
 struct result {
   uint8_t code;
+  uint32_t num_clients;
+  const struct client *clients;
 };
 
 int read_cmd(int socket, struct command *cmd);
