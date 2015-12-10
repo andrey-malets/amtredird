@@ -4,8 +4,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "cmp/cmp.h"
-
 #define MAX_ARG_SIZE 128
 
 enum {

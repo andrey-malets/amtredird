@@ -3,6 +3,8 @@
 #include "config.h"
 #include "macro.h"
 
+#include "cmp/cmp.h"
+
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
