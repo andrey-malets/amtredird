@@ -100,9 +100,11 @@ finish_client:
 
 close:
   CHECK(SYSCALL(close(server_sock)),
-        PERROR1("close() failed for", "server socket"), ;);
+        PERROR1("close() failed for", "server socket"),
+        GOTO_WITH(exit, rv, 0));
   CHECK(SYSCALL(unlink(config->socket)),
-        PERROR1("ulink() failed for", config->socket), ;);
+        PERROR1("ulink() failed for", config->socket),
+        GOTO_WITH(exit, rv, 0));
 exit:
   return rv;
 }
