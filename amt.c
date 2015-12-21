@@ -109,8 +109,7 @@ int stop_client(const struct client *client) {
   assert(client);
   int rv = 1;
 
-  IDERDeviceCmd cmd = {.pri_op = IDER_DISABLE,
-                       .pri_timing = IDER_SET_IMMEDIATELY};
+  IDERDeviceCmd cmd = {.pri_op = IDER_DISABLE, .pri_timing = IDER_SET_ONRESET};
   IDERDeviceResult result;
   IMR_CHECK(GOTO_WITH(free, rv, 0), client->host,
             IMR_IDERSetDeviceState, client->id, &cmd, &result);
