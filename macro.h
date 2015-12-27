@@ -33,3 +33,16 @@
       act; \
     } \
   } while (0)
+
+#define IMR_RETRY_ON_TIMEOUT(times, act, host, cmd, ...) \
+  for (size_t _try = 0; _try != times; ++_try) { \
+    IMRResult res = cmd(__VA_ARGS__); \
+    if (res == IMR_RES_TIMEOUT) { \
+      display_error(host, #cmd, res); \
+      continue; \
+    } \
+    if (res != IMR_RES_OK) { \
+      display_error(host, #cmd, res); \
+      act; \
+    } \
+  }

@@ -1,7 +1,7 @@
 CC=clang
 CFLAGS=-pedantic -Werror -Wall -std=c11 -g \
 	-Wno-gnu-zero-variadic-macro-arguments \
-	-D_POSIX_SOURCE -D_POSIX_C_SOURCE=201500
+	-D_POSIX_SOURCE -D_POSIX_C_SOURCE=201500 -O2
 
 LIBS=crypto pthread stdc++ ssl uuid
 AMTLIB=amt-redir-libs/lib/libimrsdkUbuntu.a
