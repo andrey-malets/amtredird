@@ -45,4 +45,5 @@
       display_error(host, #cmd, res); \
       act; \
     } \
+    break; \
   }
