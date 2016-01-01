@@ -12,10 +12,12 @@ int setup_signalfd() {
   sigset_t mask;
   sigemptyset(&mask);
   sigaddset(&mask, SIGINT);
+  sigaddset(&mask, SIGPIPE);
   sigaddset(&mask, SIGTERM);
   int rv = -1;
   CHECK(SYSCALL(sigprocmask(SIG_BLOCK, &mask, NULL)),
         perror("sigprocmask(SIG_BLOCK, ...) failed"), goto ret);
+  sigdelset(&mask, SIGPIPE);
   CHECK(SYSCALL(rv = signalfd(-1, &mask, 0)),
         perror("signalfd() failed"), goto ret);
 ret:
