@@ -48,6 +48,6 @@ def act(cmdname):
     cmd = {'start': client.start, 'stop': client.stop}.get(cmdname)
     if cmd is not None:
         return reply(dict((value, cmd(value))
-                          for _, value in request.form.iteritems()))
+                          for _, value in list(request.form.items())))
     else:
         abort(404)
