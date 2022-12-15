@@ -2,6 +2,8 @@
 
 #include "config.h"
 
+void display_error(const char *host, const char *cmd, IMRResult res);
+
 int init_amt(struct config *config);
 void teardown_amt(const struct config *config);
 
