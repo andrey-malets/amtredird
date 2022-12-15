@@ -3,14 +3,21 @@ CFLAGS=-pedantic -Werror -Wall -std=c11 -g \
 	-Wno-gnu-zero-variadic-macro-arguments \
 	-D_POSIX_SOURCE -D_POSIX_C_SOURCE=201500 -O2
 
-LIBS=ssl crypto pthread stdc++ uuid
+STDLIBS=dl pthread stdc++ uuid
 AMTLIB=amt-redir-libs/lib/libimrsdkUbuntu.a
+SSLLIBS=amt-redir-libs/lib/libssl.a amt-redir-libs/lib/libcrypto.a
+
+all: amtredird sol
 
 amtredird: amt.o cmd.o cmp.o config.o main.o ini.o server.o ssl.o
-	$(CC) $(CFLAGS) -o $@ $^ $(AMTLIB) $(foreach lib,$(LIBS),-l$(lib))
+	$(CC) $(CFLAGS) -o $@ $^ \
+		$(AMTLIB) $(SSLLIBS) \
+		$(foreach lib,$(STDLIBS),-l$(lib))
 
 sol: amt.o cmd.o cmp.o config.o ini.o sol.o ssl.o
-	$(CC) $(CFLAGS) -o $@ $^ $(AMTLIB) $(foreach lib,$(LIBS),-l$(lib))
+	$(CC) $(CFLAGS) -o $@ $^ \
+		$(AMTLIB) $(SSLLIBS) \
+		$(foreach lib,$(STDLIBS),-l$(lib))
 
 cmp.o: cmp/cmp.c
 	$(CC) $(CFLAGS) -c -o $@ $^
