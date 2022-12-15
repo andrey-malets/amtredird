@@ -6,24 +6,10 @@
 
 #define MAX_ARG_SIZE 128
 
-enum {
-  CMD_LIST,
-  CMD_START,
-  CMD_STOP,
-  CMD_LAST = CMD_STOP
-} cmd_type;
-
 struct command {
   uint8_t type;
   char arg[MAX_ARG_SIZE];
 };
-
-enum {
-  RES_OK,
-  RES_NO_SUCH_CLIENT,
-  RES_FAILED,
-  RES_NOT_UNDERSTOOD
-} result_code;
 
 struct result {
   uint8_t code;

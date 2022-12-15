@@ -14,6 +14,21 @@
 
 #define PROTO_VERSION 1
 
+enum {
+  CMD_LIST,
+  CMD_START,
+  CMD_STOP,
+  CMD_LAST = CMD_STOP
+} cmd_type;
+
+
+enum {
+  RES_OK,
+  RES_NO_SUCH_CLIENT,
+  RES_FAILED,
+  RES_NOT_UNDERSTOOD
+} result_code;
+
 static bool read_from_socket(cmp_ctx_t *ctx, void *data, size_t size) {
   const int *socket = ctx->buf;
   ssize_t rem = size, received = 0;
