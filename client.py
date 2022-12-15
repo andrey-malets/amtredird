@@ -58,7 +58,7 @@ def main(raw_args):
     cmds = {'list': list, 'start': start, 'stop': stop}
     parser = argparse.ArgumentParser(
         description='Client for simple AMT redirection daemon')
-    parser.add_argument('COMMAND', choices=cmds.keys(),
+    parser.add_argument('COMMAND', choices=list(cmds.keys()),
                         help='Command to execute')
     parser.add_argument('-c', metavar='CLIENT',
                         help='Client hostname to operate on')
@@ -68,10 +68,10 @@ def main(raw_args):
         code, args = cmds[args.COMMAND](args.c)
         if len(args) > 0:
             for value in args:
-                print value
+                print(value)
         return code
     except Exception as e:
-        print >>sys.stderr, e
+        print(e, file=sys.stderr)
         return 10
 
 
