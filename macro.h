@@ -34,11 +34,11 @@
     } \
   } while (0)
 
-#define IMR_RETRY(times, act, host, cmd, ...) \
+#define IMR_RETRY(times, res, host, cmd, ...) \
   { \
     int stop = 0; \
     for (size_t _try = 0; !stop && _try != times; ++_try) { \
-      IMRResult res = cmd(__VA_ARGS__); \
+      res = cmd(__VA_ARGS__); \
       switch (res) { \
       case IMR_RES_TIMEOUT: \
       case IMR_RES_SOCKET_ERROR: \
@@ -49,8 +49,18 @@
         break; \
       default: \
         display_error(host, #cmd, res); \
-        act; \
+        stop = 1; \
         break; \
       } \
     } \
+  }
+
+#define IMR_HANDLE_CLOSED(res, act) \
+  switch (res) { \
+  case IMR_RES_OK: \
+  case IMR_RES_SESSION_CLOSED: \
+    break; \
+  default: \
+    act; \
+    break; \
   }

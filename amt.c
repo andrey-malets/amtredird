@@ -90,14 +90,19 @@ int start_client(const struct config *config, const struct client *client) {
   strncpy(params.user_name, get_username(config, client), MAX_NAME_LEN);
   strncpy(params.user_pswd, get_passwd(config, client), MAX_PSWD_LEN);
 
-  IMR_RETRY(5, goto ret, client->host, IMR_IDEROpenTCPSession,
+  IMRResult res;
+  IMR_RETRY(5, res, client->host, IMR_IDEROpenTCPSession,
             client->id, &params, (IDERTout *)&IDER_TIMEOUTS,
             (char *)client->filename, (char *)EMPTY_DEV);
+  if (res != IMR_RES_OK)
+    goto ret;
 
   IDERDeviceCmd cmd = {.pri_op = IDER_ENABLE, .pri_timing = IDER_SET_ONRESET};
   IDERDeviceResult result;
-  IMR_RETRY(5, goto free, client->host,
+  IMR_RETRY(5, res, client->host,
             IMR_IDERSetDeviceState, client->id, &cmd, &result);
+  if (res != IMR_RES_OK)
+    goto free;
 
   if (result.pri_res != IDER_DONE) {
     fputs("IDERDeviceResult is not IDER_DONE\n", stderr);
@@ -118,8 +123,10 @@ int stop_client(const struct client *client) {
 
   IDERDeviceCmd cmd = {.pri_op = IDER_DISABLE, .pri_timing = IDER_SET_ONRESET};
   IDERDeviceResult result;
-  IMR_RETRY(5, GOTO_WITH(free, rv, 0), client->host,
+  IMRResult res;
+  IMR_RETRY(5, res, client->host,
             IMR_IDERSetDeviceState, client->id, &cmd, &result);
+  IMR_HANDLE_CLOSED(res, GOTO_WITH(free, rv, 0));
 
   if (result.pri_res != IDER_DONE) {
     fputs("warning: IDERDeviceResult is not IDER_DONE\n", stderr);
@@ -127,8 +134,8 @@ int stop_client(const struct client *client) {
   }
 
 free:
-  IMR_RETRY(5, GOTO_WITH(ret, rv, 0),
-            client->host, IMR_IDERCloseSession, client->id);
+  IMR_RETRY(5, res, client->host, IMR_IDERCloseSession, client->id);
+  IMR_HANDLE_CLOSED(res, GOTO_WITH(ret, rv, 0));
 ret:
   return rv;
 }
