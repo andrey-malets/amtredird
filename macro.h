@@ -34,16 +34,23 @@
     } \
   } while (0)
 
-#define IMR_RETRY_ON_TIMEOUT(times, act, host, cmd, ...) \
-  for (size_t _try = 0; _try != times; ++_try) { \
-    IMRResult res = cmd(__VA_ARGS__); \
-    if (res == IMR_RES_TIMEOUT) { \
-      display_error(host, #cmd, res); \
-      continue; \
+#define IMR_RETRY(times, act, host, cmd, ...) \
+  { \
+    int stop = 0; \
+    for (size_t _try = 0; !stop && _try != times; ++_try) { \
+      IMRResult res = cmd(__VA_ARGS__); \
+      switch (res) { \
+      case IMR_RES_TIMEOUT: \
+      case IMR_RES_SOCKET_ERROR: \
+        display_error(host, #cmd, res); \
+        break; \
+      case IMR_RES_OK: \
+        stop = 1; \
+        break; \
+      default: \
+        display_error(host, #cmd, res); \
+        act; \
+        break; \
+      } \
     } \
-    if (res != IMR_RES_OK) { \
-      display_error(host, #cmd, res); \
-      act; \
-    } \
-    break; \
   }
