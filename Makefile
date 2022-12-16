@@ -1,7 +1,8 @@
 CC=clang
+INCLUDE=amt-redir-libs/include
 CFLAGS=-pedantic -Werror -Wall -std=c11 -g \
 	-Wno-gnu-zero-variadic-macro-arguments \
-	-D_POSIX_SOURCE -D_POSIX_C_SOURCE=201500 -O2
+	-I$(INCLUDE) -D_POSIX_SOURCE -D_POSIX_C_SOURCE=201500 -O2
 
 STDLIBS=dl pthread stdc++ uuid
 AMTLIB=amt-redir-libs/lib/libimrsdkUbuntu.a
