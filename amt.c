@@ -128,7 +128,7 @@ int stop_client(const struct client *client) {
             IMR_IDERSetDeviceState, client->id, &cmd, &result);
   IMR_HANDLE_CLOSED(res, GOTO_WITH(free, rv, 0));
 
-  if (result.pri_res != IDER_DONE) {
+  if (res == IMR_RES_OK && result.pri_res != IDER_DONE) {
     fputs("warning: IDERDeviceResult is not IDER_DONE\n", stderr);
     rv = 0;
   }
